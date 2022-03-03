@@ -6,14 +6,16 @@ Clave=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/Clave.csv")
 Cupon=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/Cupon.csv")
 Cuarto=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/Cuarto.csv")
 Producto=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/Producto.csv")
-America=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/America.csv")
-Global=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/Global.csv")
-EMEA=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/EMEA.csv")
+America=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/AMERICAS.csv", 
+                    sep=',', lineterminator='\r')
+Global=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/Global.csv", 
+                    sep=',', lineterminator='\r')
+EMEA=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/EMEA.csv", 
+                    sep=',', lineterminator='\r')
 #%% Clean
-RO=America.append(Global, ignore_index=True)
+RO=pd.concat([America, Global, EMEA], ignore_index=True)
 del Global
 del America
-RO=RO.append(EMEA, ignore_index=True)
 del EMEA
 RO=RO[RO.Transaction_ID.notnull()]
 RO=RO[["Timestamp", "Campaign", "CampaignType", "Media", "Placement", 
@@ -22,6 +24,8 @@ RO=RO[["Timestamp", "Campaign", "CampaignType", "Media", "Placement",
        "Number_of_rooms", "Guests", "Transaction_ID", "Prop_ID", "Page_Site",
        "Checkin_date", "Checkout_data", "Room_name", "Promotion", 
        "is_booking_center", "Tag"]]
+#Fechas RO
+RO["Timestamp"]=RO["Timestamp"].str[1:]
 #%%Joins
 GO=pd.merge(Producto, Clave[["ID de transacción", "Palabra clave"]],
             on='ID de transacción', how='inner')
@@ -125,6 +129,9 @@ RO.loc[RO["Country.1"]=="Portugal", "Country.1"]="PT"
 RO.loc[RO["Country.1"]=="Ukraine", "Country.1"]="UA"
 RO.loc[RO["Country.1"]=="Cayman Islands", "Country.1"]="KY"
 RO.loc[RO["Country.1"]=="Israel", "Country.1"]="IL"
+RO.loc[RO["Country.1"]=="Finland", "Country.1"]="FI"
+RO.loc[RO["Country.1"]=="Poland", "Country.1"]="PL"
+RO.loc[RO["Country.1"]=="Singapore", "Country.1"]="SG"
 #Ciudad
 RO["City"]=RO["Región"]
 RO.loc[RO["City"]=="Alabama", "City"]="AL"
@@ -215,11 +222,187 @@ usando pat=" " y ya despues limpiamos
 #%% Media
 # Medios de Google
 RO.loc[RO["Media"].isnull(), "Media"]=RO["Fuente/Medio"]
-RO.loc[RO["Media"].isnull(), "Campaign"]=RO["Campaña"]
-RO.loc[RO["Media"].isnull(), "Banner/Adgroup"]=RO["Palabra clave"]
+RO.loc[RO["Campaign"].isnull(), "Campaign"]=RO["Campaña"]
+RO.loc[RO["Paid Keywords"].isnull(), "Paid Keywords"]=RO["Palabra clave"]
 RO.loc[RO["Promotion"].isnull(), "Promotion"]=RO["Código de cupón del producto"]
 RO.loc[RO["Promotion"].isnull(), "Promotion"]="-"
 RO.loc[RO["Promotion"]=="(not set)", "Promotion"]="-"
+#Bing
+RO.loc[RO["Media"]=="bing / cpc", "CampaignType"]="Microsoft"
+RO.loc[RO["Media"]=="bing / cpc", "Placement"]="Microsoft"
+RO.loc[RO["Media"]=="bing / cpc", "Banner/Adgroup"]="Exacta"
+RO.loc[RO["Media"]=="bing / cpc", "Ad Interaction"]="Click"
+RO.loc[RO["Media"]=="bing / cpc", "Referrer Type"]="Search Engine"
+RO.loc[RO["Media"]=="bing / cpc", "Media"]="Microsoft AdCenter"
+#GMB
+RO.loc[RO["Media"]=="google / gmb", "CampaignType"]="Display"
+RO.loc[RO["Media"]=="google / gmb", "Placement"]="Business Listing"
+RO.loc[RO["Media"]=="google / gmb", "Ad Interaction"]="Click"
+RO.loc[RO["Media"]=="google / gmb", "Referrer Type"]="Campaign"
+RO.loc[RO["Media"]=="google / gmb", "Banner/Adgroup"]=RO["Campaña"]
+RO.loc[(RO["Media"]=="google / gmb") & (RO["Campaign"]).str.contains("xpc",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="google / gmb") & (RO["Campaign"]).str.contains("xrc",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="google / gmb") & (RO["Campaign"]).str.contains("xob",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="google / gmb") & (RO["Campaign"]).str.contains("xpm",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="google / gmb") & (RO["Campaign"]).str.contains("xec",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="google / gmb") & (RO["Campaign"]).str.contains("bpm",
+                                        regex=True, case=False), "Campaign"]="AO - BELOVED HOTELS - Alkemy"
+RO.loc[(RO["Media"]=="google / gmb") & (RO["Campaign"]).str.contains("fpm",
+                                        regex=True, case=False), "Campaign"]="AO - FINEST RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="google / gmb") & (RO["Campaign"]).str.contains("fpc",
+                                        regex=True, case=False), "Campaign"]="AO - FINEST RESORTS - Alkemy"
+RO.loc[RO["Media"]=="google / gmb", "Media"]="Google My Business"
+# HotelAds
+RO.loc[RO["Media"]=="googlehotelads / metasearch", "Banner/Adgroup"]=RO["Campaña"]
+RO.loc[RO["Media"]=="googlehotelads / metasearch", "CampaignType"]="Display"
+RO.loc[RO["Media"]=="googlehotelads / metasearch", "Placement"]="Metabuscadores"
+RO.loc[RO["Media"]=="googlehotelads / metasearch", "Ad Interaction"]="Click"
+RO.loc[RO["Media"]=="googlehotelads / metasearch", "Paid Keywords"]="Metasearch_HotelAds_FPC"
+RO.loc[RO["Media"]=="googlehotelads / metasearch", "Referrer Type"]="Campaign"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("xob",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_HotelAds_EUR_XOB"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("xrc",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_HotelAds_EUR_XRC"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("xpm",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_HotelAds_EUR_XPM"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("fpm",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_HotelAds_EUR_FPM"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("fpc",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_HotelAds_EUR_FPC"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("xob",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_HotelAds_EUR_XOB"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("xrc",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_HotelAds_EUR_XRC"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("xpm",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_HotelAds_EUR_XPM"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("fpm",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_HotelAds_EUR_FPM"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("fpc",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_HotelAds_EUR_FPC"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("xpc",
+                                        regex=True, case=False),
+                                       "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("xrc",
+                                        regex=True, case=False),
+                                       "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("xob",
+                                        regex=True, case=False),
+                                       "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("xpm",
+                                        regex=True, case=False),
+                                       "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("xec",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("bpm",
+                                        regex=True, case=False), "Campaign"]="AO - BELOVED HOTELS - Alkemy"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("fpm",
+                                        regex=True, case=False), "Campaign"]="AO - FINEST RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="googlehotelads / metasearch") & (RO["Campaign"]).str.contains("fpc",
+                                        regex=True, case=False), "Campaign"]="AO - FINEST RESORTS - Alkemy"
+RO.loc[RO["Media"]=="googlehotelads / metasearch", "Media"]="HotelAds"
+# Trivago
+RO.loc[RO["Media"]=="trivago / metasearch", "CampaignType"]="Trivago"
+RO.loc[RO["Media"]=="trivago / metasearch", "Placement"]="Metabuscadores"
+RO.loc[RO["Media"]=="trivago / metasearch", "Ad Interaction"]="Click"
+RO.loc[RO["Media"]=="trivago / metasearch", "Referrer Type"]="Campaign"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("xob",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_Trivago_EUR_XOB"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("xrc",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_Trivago_EUR_XRC"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("xpm",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_Trivago_EUR_XPM"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("fpm",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_Trivago_EUR_FPM"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("fpc",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_Trivago_EUR_FPC"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("xob",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_Trivago_EUR_XOB"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("xrc",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_Trivago_EUR_XRC"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("xpm",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_Trivago_EUR_XPM"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("fpm",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_Trivago_EUR_FPM"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("fpc",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_Trivago_EUR_FPC"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("xec",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("bpm",
+                                        regex=True, case=False), "Campaign"]="AO - BELOVED HOTELS - Alkemy"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("fpm",
+                                        regex=True, case=False), "Campaign"]="AO - FINEST RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="trivago / metasearch") & (RO["Campaign"]).str.contains("fpc",
+                                        regex=True, case=False), "Campaign"]="AO - FINEST RESORTS - Alkemy"
+RO.loc[RO["Media"]=="trivago / metasearch", "Media"]="Trivago"
+# Kayak
+RO.loc[RO["Media"]=="kayak / metasearch", "CampaignType"]="Display"
+RO.loc[RO["Media"]=="kayak / metasearch", "Placement"]="Metabuscadores"
+RO.loc[RO["Media"]=="kayak / metasearch", "Ad Interaction"]="Click"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("xob",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_Kayak_EUR_XOB"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("xrc",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_Kayak_EUR_XRC"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("xpm",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_Kayak_EUR_XPM"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("fpm",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_Kayak_EUR_FPM"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("fpc",
+                                        regex=True, case=False),
+                                       "Banner/Adgroup"]="Metasearch_Kayak_EUR_FPC"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("xob",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_Kayak_EUR_XOB"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("xrc",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_Kayak_EUR_XRC"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("xpm",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_Kayak_EUR_XPM"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("fpm",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_Kayak_EUR_FPM"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("fpc",
+                                        regex=True, case=False),
+                                       "Paid Keywords"]="Metasearch_Kayak_EUR_FPC"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("xec",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("bpm",
+                                        regex=True, case=False), "Campaign"]="AO - BELOVED HOTELS - Alkemy"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("fpm",
+                                        regex=True, case=False), "Campaign"]="AO - FINEST RESORTS - Alkemy"
+RO.loc[(RO["Media"]=="kayak / metasearch") & (RO["Campaign"]).str.contains("fpc",
+                                        regex=True, case=False), "Campaign"]="AO - FINEST RESORTS - Alkemy"
+# TripAdsvisor
+
 # Affiliered
 RO.loc[RO["Media"].str.contains("Affilired", regex=False, na=False, case=False), "Placement"]=RO["Media"]
 # Bride click
@@ -271,6 +454,7 @@ RO.loc[RO["Media"].str.contains("web", regex=False, na=False), "Referrer Type"]=
 RO.loc[RO["Media"].str.contains("web", regex=False, na=False), "Media"]="External"
 # Steel House
 RO.loc[RO["Media"].str.contains("steelhouse", regex=False, na=False, case=False), "Media"]="Steel House"
+RO.loc[RO["Media"]=="Steel House", "Placement"]=RO["Media"]
 # -
 RO.loc[RO["Media"].isnull(), "Campaign"]="-"
 RO.loc[RO["Media"].isnull(), "CampaignType"]="-"
@@ -280,10 +464,60 @@ RO.loc[RO["Media"].isnull(), "Banner/Adgroup"]="-"
 RO.loc[RO["Media"].isnull(), "Ad Interaction"]="-"
 RO.loc[RO["Media"].isnull(), "Referrer Type"]="-"
 RO.loc[RO["Media"].isnull(), "Media"]="-"
+# GDN
+RO.loc[RO["Media"]=="GDN", "Placement"]=RO["Media"]
+RO.loc[RO["Media"]=="GDN", "CampaignType"]="Display"
+#%%Campañas
+RO.loc[(RO["Campaign"]=="AO - TEC") & (RO["Banner/Adgroup"]).str.contains("XRC",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Campaign"]=="AO - TEC") & (RO["Banner/Adgroup"]).str.contains("XEC",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Campaign"]=="AO - TEC") & (RO["Banner/Adgroup"]).str.contains("XOB",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Campaign"]=="AO - TEC") & (RO["Banner/Adgroup"]).str.contains("XPM",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Campaign"]=="AO - TEC") & (RO["Banner/Adgroup"]).str.contains("XPC",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+RO.loc[(RO["Campaign"]=="AO - TEC") & (RO["Banner/Adgroup"]).str.contains("EX",
+                                        regex=True, case=False), "Campaign"]="AO EXCELLENCE RESORTS - Alkemy"
+
+RO.loc[(RO["Campaign"]=="AO - TEC") & (RO["Banner/Adgroup"]).str.contains("FPM",
+                                        regex=True, case=False), "Campaign"]="AO - FINEST RESORTS - Alkemy"
+RO.loc[(RO["Campaign"]=="AO - TEC") & (RO["Banner/Adgroup"]).str.contains("FPC",
+                                        regex=True, case=False), "Campaign"]="AO - FINEST RESORTS - Alkemy"
+RO.loc[(RO["Campaign"]=="AO - TEC") & (RO["Banner/Adgroup"]).str.contains("FR",
+                                        regex=True, case=False), "Campaign"]="AO - FINEST RESORTS - Alkemy"
+
+RO.loc[(RO["Campaign"]=="AO - TEC") & (RO["Banner/Adgroup"]).str.contains("BPM",
+                                        regex=True, case=False), "Campaign"]="AO - BELOVED HOTELS - Alkemy"
 #%% Load
 RO=RO[["Timestamp", "Campaign", "CampaignType", "Media", "Placement", "Banner/Adgroup", "Ad Interaction",
        "Paid Keywords", "Referrer Type", "Page", "City", "Order ID", "Sales", "Country.1", "Currency",
        "Number_of_rooms", "Guests", "Transaction_ID", "Prop_ID", "Page_Site", "Checkin_date",
-       "Checkout_data", "Room_name", "Promotion", "is_booking_center", "Tag"]]
+       "Checkout_data", "Room_name", "Promotion", "is_booking_center", "Tag", "Categoría de dispositivo"]]
 RO=RO.rename(columns={"Categoría de dispositivo": "Device", "Country.1": "Country"})
 RO.to_csv("Adform_22"+Dias[:4]+"_22"+Dias[5:9]+".csv", index=False)
+GO.to_csv("ROPY.csv", index=False)
+
+print("Banner de GMB")
+
+
+"""
+*Esta vez no tuvbe problemas con el csv, al parecer al inicio fue un problema de MAC ahora solo hay que ver si
+no tien eproblemas con el encoding
+*Debo de cambiar L60 para quitar el append
+*Algo hicwe que esta vez no jalo la campaña de GA éro espo es mejor, ahora rodas estan vacias y puedo buscar
+la correcta
+*payyd keywords todas la sraras deen de tener un "-"
+en la linea 186 estoy usanod "&" como un and pero al parecer es un or, el and es "|"
+En 14-20 encontre que los csv de Adform incluian "\n" en el Timestamp, lo cual causaba un error, por lo que
+escogi un substring saltando estos primeros dos caracteres, lo raro es que esto acaba de pasar por lo que 
+que he agregado un  modulo de fecha para RO, en el que si el primer caracter no es numerico entonces,
+usar un substring del timestamp
+En bing hay caracteres extraños en Exacta Ingles y Exacta Español, en CampaignType, Media y Placement
+debe de decir Microsoft  en abnenr adgroup, Exacta para los vacios, en ad intercation, click para los avcios
+y en paid keyword vacios, la clave solo falatrua ajustar las caampñas, desplegar un print con el recordatorio
+hasta que areglemos esto
+en Newsletter y email Campaign	CampaignType	Media	Placement deben de decir lo mismo, y en las banners
+vacios jalamos la campaña, paid keyword "-", ad intercation "Click" en las vacias, refer tyoe "Campaign" todas
+"""
