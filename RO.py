@@ -12,6 +12,9 @@ Global=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/Global.csv",
                     sep=',', lineterminator='\r')
 EMEA=pd.read_csv("/Users/isaibb/Desktop/Clean/RO/EMEA.csv", 
                     sep=',', lineterminator='\r')
+#%% Functions
+def one(col_1, col_2, val_1, val_2):
+  RO.loc[RO[col_1]==val_1, col_2]=val_2  
 #%% Clean
 RO=pd.concat([America, Global, EMEA], ignore_index=True)
 del Global
@@ -81,142 +84,31 @@ RO.loc[RO["Categoría de dispositivo"]=="desktop", "Categoría de dispositivo"]=
 RO.loc[RO["Categoría de dispositivo"]=="tablet", "Categoría de dispositivo"]="Tablet"
 RO.loc[RO["Categoría de dispositivo"]=="mobile", "Categoría de dispositivo"]="Mobile"
 #Paises
-# Paises=["United States","Canada","Mexico","Colombia","Australia","Belgium","Bermuda","Brazil","Chile","Cuba","Denmark",
-#         "Dominican Republic","Ecuador","France","El Salvador","Germany","Guatemala","Hungary","India","Ireland","Italy",
-#         "Jamaica","Japan","Liechtenstein","Netherlands","New Zealand","Norway","Panama","Paraguay","Puerto Rico","Russia",
-#         "South Korea","Spain","Switzerland","Trinidad & Tobago","United Kingdom","Vietnam","Argentina","Bolivia","Czechia",
-#         "Venezuela","Slovenia","Turks & Caicos Islands","Costa Rica","Portugal","Ukraine","Cayman Islands","Israel","Finland",
-#         "Poland","Singapore"]
-# Paises_ISO=["US","CA","MX","CO","AU","BE","BM","BR","CL","CU","DK","DO","EC","FR","SV","DE","GT","HU","IN","IE","IT","JM",
-#             "JP","LI","NL","NZ","NO","PA","PY","PR","RU","KR","ES","CH","TT","GB","VN","AR","BO","CZ","VE","SI","TC","CR",
-#             "PT","UA","KY","IL","FI","PL","SG"]
-# for i in Paises:
-#     RO.loc[RO["Country.1"]==Paises[i], "Country.1"]=Paises_ISO[i]
+Paises=["United States","Canada","Mexico","Colombia","Australia","Belgium","Bermuda","Brazil","Chile","Cuba","Denmark",
+        "Dominican Republic","Ecuador","France","El Salvador","Germany","Guatemala","Hungary","India","Ireland","Italy",
+        "Jamaica","Japan","Liechtenstein","Netherlands","New Zealand","Norway","Panama","Paraguay","Puerto Rico","Russia",
+        "South Korea","Spain","Switzerland","Trinidad & Tobago","United Kingdom","Vietnam","Argentina","Bolivia","Czechia",
+        "Venezuela","Slovenia","Turks & Caicos Islands","Costa Rica","Portugal","Ukraine","Cayman Islands","Israel","Finland",
+        "Poland","Singapore", "Indonesia"]
+Paises_ISO=["US","CA","MX","CO","AU","BE","BM","BR","CL","CU","DK","DO","EC","FR","SV","DE","GT","HU","IN","IE","IT","JM",
+            "JP","LI","NL","NZ","NO","PA","PY","PR","RU","KR","ES","CH","TT","GB","VN","AR","BO","CZ","VE","SI","TC","CR",
+            "PT","UA","KY","IL","FI","PL","SG", "ID"]
+for i in range(len(Paises)):
+    RO.loc[RO["Country.1"]==Paises[i], "Country.1"]=Paises_ISO[i]
     
-    
-        
-RO.loc[RO["Country.1"]=="United States", "Country.1"]="US"
-RO.loc[RO["Country.1"]=="Canada", "Country.1"]="CA"
-RO.loc[RO["Country.1"]=="Mexico", "Country.1"]="MX"
-RO.loc[RO["Country.1"]=="Colombia", "Country.1"]="CO"
-RO.loc[RO["Country.1"]=="Australia", "Country.1"]="AU"
-RO.loc[RO["Country.1"]=="Belgium", "Country.1"]="BE"
-RO.loc[RO["Country.1"]=="Bermuda", "Country.1"]="BM"
-RO.loc[RO["Country.1"]=="Brazil", "Country.1"]="BR"
-RO.loc[RO["Country.1"]=="Chile", "Country.1"]="CL"
-RO.loc[RO["Country.1"]=="Cuba", "Country.1"]="CU"
-RO.loc[RO["Country.1"]=="Denmark", "Country.1"]="DK"
-RO.loc[RO["Country.1"]=="Dominican Republic", "Country.1"]="DO"
-RO.loc[RO["Country.1"]=="Ecuador", "Country.1"]="EC"
-RO.loc[RO["Country.1"]=="France", "Country.1"]="FR"
-RO.loc[RO["Country.1"]=="El Salvador", "Country.1"]="SV"
-RO.loc[RO["Country.1"]=="Germany", "Country.1"]="DE"
-RO.loc[RO["Country.1"]=="Guatemala", "Country.1"]="GT"
-RO.loc[RO["Country.1"]=="Hungary", "Country.1"]="HU"
-RO.loc[RO["Country.1"]=="India", "Country.1"]="IN"
-RO.loc[RO["Country.1"]=="Ireland", "Country.1"]="IE"
-RO.loc[RO["Country.1"]=="Italy", "Country.1"]="IT"
-RO.loc[RO["Country.1"]=="Jamaica", "Country.1"]="JM"
-RO.loc[RO["Country.1"]=="Japan", "Country.1"]="JP"
-RO.loc[RO["Country.1"]=="Liechtenstein", "Country.1"]="LI"
-RO.loc[RO["Country.1"]=="Netherlands", "Country.1"]="NL"
-RO.loc[RO["Country.1"]=="New Zealand", "Country.1"]="NZ"
-RO.loc[RO["Country.1"]=="Norway", "Country.1"]="NO"
-RO.loc[RO["Country.1"]=="Panama", "Country.1"]="PA"
-RO.loc[RO["Country.1"]=="Paraguay", "Country.1"]="PY"
-RO.loc[RO["Country.1"]=="Puerto Rico", "Country.1"]="PR"
-RO.loc[RO["Country.1"]=="Russia", "Country.1"]="RU"
-RO.loc[RO["Country.1"]=="South Korea", "Country.1"]="KR"
-RO.loc[RO["Country.1"]=="Spain", "Country.1"]="ES"
-RO.loc[RO["Country.1"]=="Switzerland", "Country.1"]="CH"
-RO.loc[RO["Country.1"]=="Trinidad & Tobago", "Country.1"]="TT"
-RO.loc[RO["Country.1"]=="United Kingdom", "Country.1"]="GB"
-RO.loc[RO["Country.1"]=="Vietnam", "Country.1"]="VN"
-RO.loc[RO["Country.1"]=="Argentina", "Country.1"]="AR"
-RO.loc[RO["Country.1"]=="Bolivia", "Country.1"]="BO"
-RO.loc[RO["Country.1"]=="Czechia", "Country.1"]="CZ"
-RO.loc[RO["Country.1"]=="Venezuela", "Country.1"]="VE"
-RO.loc[RO["Country.1"]=="Slovenia", "Country.1"]="SI"
-RO.loc[RO["Country.1"]=="Turks & Caicos Islands", "Country.1"]="TC"
-RO.loc[RO["Country.1"]=="Costa Rica", "Country.1"]="CR"
-RO.loc[RO["Country.1"]=="Portugal", "Country.1"]="PT"
-RO.loc[RO["Country.1"]=="Ukraine", "Country.1"]="UA"
-RO.loc[RO["Country.1"]=="Cayman Islands", "Country.1"]="KY"
-RO.loc[RO["Country.1"]=="Israel", "Country.1"]="IL"
-RO.loc[RO["Country.1"]=="Finland", "Country.1"]="FI"
-RO.loc[RO["Country.1"]=="Poland", "Country.1"]="PL"
-RO.loc[RO["Country.1"]=="Singapore", "Country.1"]="SG"
-RO.loc[RO["Country.1"]=="Qatar", "Country.1"]="QA"
-RO.loc[RO["Country.1"]=="Iraq", "Country.1"]="IQ"
-RO.loc[RO["Country.1"]=="Luxembourg", "Country.1"]="LU"
-RO.loc[RO["Country.1"]=="Austria", "Country.1"]="AT"
 #Ciudad
+Ciudades=["Alabama", "Alaska","American Samoa","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","District of Columbia","Florida","Georgia",
+          "Guam","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi",
+          "Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Northern Mariana Island",
+          "Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Virgin Islands",
+          "Washington","West Virginia","Wisconsin","Wyoming", "(not set)"]
+Ciudades_ISO=["AL","AK","AS","AZ","AR","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE",
+              "NV","NH","NJ","NM","NY","NC","ND","MP","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","VI","WA","WV","WI","WY", "-"]
 RO["City"]=RO["Región"]
-RO.loc[RO["City"]=="Alabama", "City"]="AL"
-RO.loc[RO["City"]=="Alaska", "City"]="AK"
-RO.loc[RO["City"]=="American Samoa", "City"]="AS"
-RO.loc[RO["City"]=="Arizona", "City"]="AZ"
-RO.loc[RO["City"]=="Arkansas", "City"]="AR"
-RO.loc[RO["City"]=="California", "City"]="CA"
-RO.loc[RO["City"]=="Colorado", "City"]="CO"
-RO.loc[RO["City"]=="Connecticut", "City"]="CT"
-RO.loc[RO["City"]=="Delaware", "City"]="DE"
-RO.loc[RO["City"]=="District of Columbia", "City"]="DC"
-RO.loc[RO["City"]=="Florida", "City"]="FL"
-RO.loc[RO["City"]=="Georgia", "City"]="GA"
-RO.loc[RO["City"]=="Guam", "City"]="GU"
-RO.loc[RO["City"]=="Hawaii", "City"]="HI"
-RO.loc[RO["City"]=="Idaho", "City"]="ID"
-RO.loc[RO["City"]=="Illinois", "City"]="IL"
-RO.loc[RO["City"]=="Indiana", "City"]="IN"
-RO.loc[RO["City"]=="Iowa", "City"]="IA"
-RO.loc[RO["City"]=="Kansas", "City"]="KS"
-RO.loc[RO["City"]=="Kentucky", "City"]="KY"
-RO.loc[RO["City"]=="Louisiana", "City"]="LA"
-RO.loc[RO["City"]=="Maine", "City"]="ME"
-RO.loc[RO["City"]=="Maryland", "City"]="MD"
-RO.loc[RO["City"]=="Massachusetts", "City"]="MA"
-RO.loc[RO["City"]=="Michigan", "City"]="MI"
-RO.loc[RO["City"]=="Minnesota", "City"]="MN"
-RO.loc[RO["City"]=="Mississippi", "City"]="MS"
-RO.loc[RO["City"]=="Missouri", "City"]="MO"
-RO.loc[RO["City"]=="Montana", "City"]="MT"
-RO.loc[RO["City"]=="Nebraska", "City"]="NE"
-RO.loc[RO["City"]=="Nevada", "City"]="NV"
-RO.loc[RO["City"]=="New Hampshire", "City"]="NH"
-RO.loc[RO["City"]=="New Jersey", "City"]="NJ"
-RO.loc[RO["City"]=="New Mexico", "City"]="NM"
-RO.loc[RO["City"]=="New York", "City"]="NY"
-RO.loc[RO["City"]=="North Carolina", "City"]="NC"
-RO.loc[RO["City"]=="North Dakota", "City"]="ND"
-RO.loc[RO["City"]=="Northern Mariana Island", "City"]="MP"
-RO.loc[RO["City"]=="Ohio", "City"]="OH"
-RO.loc[RO["City"]=="Oklahoma", "City"]="OK"
-RO.loc[RO["City"]=="Oregon", "City"]="OR"
-RO.loc[RO["City"]=="Pennsylvania", "City"]="PA"
-RO.loc[RO["City"]=="Rhode Island", "City"]="RI"
-RO.loc[RO["City"]=="South Carolina", "City"]="SC"
-RO.loc[RO["City"]=="South Dakota", "City"]="SD"
-RO.loc[RO["City"]=="Tennessee", "City"]="TN"
-RO.loc[RO["City"]=="Texas", "City"]="TX"
-RO.loc[RO["City"]=="Utah", "City"]="UT"
-RO.loc[RO["City"]=="Vermont", "City"]="VT"
-RO.loc[RO["City"]=="Virginia", "City"]="VA"
-RO.loc[RO["City"]=="Virgin Islands", "City"]="VI"
-RO.loc[RO["City"]=="Washington", "City"]="WA"
-RO.loc[RO["City"]=="West Virginia", "City"]="WV"
-RO.loc[RO["City"]=="Wisconsin", "City"]="WI"
-RO.loc[RO["City"]=="(not set)", "City"]="-"
+for i in range(len(Ciudades)):
+    RO.loc[RO["City"]==Ciudades[i], "City"]=Ciudades_ISO[i]
 RO.loc[RO["City"].isnull(), "City"]="-"
-RO.loc[(RO["Country.1"]=="US") & (~RO["City"].isin(["AL", "AK", "AS", "AZ", "AR", "CA", "CO",
-                                                   "CT", "DE", "DC", "FL", "GA", "GU", "HI",
-                                                   "ID", "IL", "IN", "IA", "KS", "KY", "LA",
-                                                   "ME", "MD", "MA", "MI", "MN", "MS", "MO",
-                                                   "MT", "NE", "NV", "NH", "NJ", "NM", "NY",
-                                                   "NC","ND", "MP", "OH", "OK", "OR", "PA",
-                                                   "RI", "SC", "SD", "TN", "TX", "UT", "VT",
-                                                   "VA", "VI", "WA", "WV", "WI", "WY"])),
-                                                   "City"]="-"
+RO.loc[(RO["Country.1"]=="US") & (~RO["City"].isin(Ciudades_ISO)),"City"]="-"
 #Fechas
 RO["Timestamp"]=RO["Timestamp"].str.replace(" ene ", "/01/", regex=False)
 RO["Timestamp"]=RO["Timestamp"].str.replace(" feb ", "/02/", regex=False)
